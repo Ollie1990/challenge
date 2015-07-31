@@ -19,7 +19,7 @@ public class TokenService {
     private MemcacheManager memcacheManager;
 
     public boolean tokenIsValid(String token){
-        //check first in cache, it there is, return true
+        //check first in cache, then DB if needed
         MemcachedClient client = memcacheManager.getClient();
         boolean isValid = memcacheManager.checkToken(client, token);
         if (isValid)

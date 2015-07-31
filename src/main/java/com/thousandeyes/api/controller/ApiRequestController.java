@@ -5,13 +5,15 @@ import com.thousandeyes.api.service.FollowerService;
 import com.thousandeyes.api.service.TokenService;
 import com.thousandeyes.api.service.TweetService;
 import com.thousandeyes.api.service.UserService;
+import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Roberto on 26/07/2015.
@@ -41,7 +43,7 @@ public class ApiRequestController {
         if (!validate(token))
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
         List<Long> followers = followerService.getFollowers(userId);
-        if (expand){
+        if (expand && !followers.isEmpty()){
             List<User> detailedFollowers = userService.getUsers(followers);
             return detailedFollowers;
         }
@@ -56,7 +58,7 @@ public class ApiRequestController {
         if (!validate(token))
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
         List<Long> following = followerService.getFollowing(userId);
-        if (expand){
+        if (expand && !following.isEmpty()){
             List<User> detailedFollowing = userService.getUsers(following);
             return detailedFollowing;
         }
@@ -118,11 +120,29 @@ public class ApiRequestController {
         return tweets;
     }
 
+    @ExceptionHandler(TypeMismatchException.class)
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public Object handleBadRequestException(Exception e) {
+        return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST, "The request is malformed.");
+    }
+
+    @ExceptionHandler(value = {IllegalStateException.class, SQLException.class})
+    @ResponseBody
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public Object handleInternalServerErrorException(Exception e) {
+        return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error. Something" +
+                " went wrong in your request.");
+    }
+
+    @RequestMapping(value = "/**")
+    public Object handleNotFoundException(Exception e) {
+        return new ErrorResponse(HttpServletResponse.SC_NOT_FOUND, "The requested endpoint does not exists.");
+    }
+
     private boolean validate(String token) {
         if (token == null || token.length() != 16)
             return false;
-        //check in DB --> cached in memory, memcache?
-        boolean isValid = tokenService.tokenIsValid(token);
-        return isValid;
+        return tokenService.tokenIsValid(token);
     }
 }
