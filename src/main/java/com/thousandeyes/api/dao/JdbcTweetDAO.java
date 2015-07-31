@@ -20,9 +20,9 @@ import java.util.List;
 @Repository("tweetDao")
 public class JdbcTweetDAO implements TweetDAO {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    private final String GET_TWEETS = "select * from tweets" +
-            "where user_id = :user_id OR user_id IN (" +
-            "select user_id from followers where follower_id = :user_id)";
+    private final String GET_TWEETS = "select * from tweets " +
+            "where user_id=:user_id OR user_id IN (" +
+            "select user_id from followers where follower_id=:user_id)";
     @Autowired
     private DataSource dataSource;
 
