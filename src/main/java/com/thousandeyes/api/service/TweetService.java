@@ -1,6 +1,6 @@
 package com.thousandeyes.api.service;
 
-import com.thousandeyes.api.dao.JdbcTweetDAO;
+import com.thousandeyes.api.dao.TweetDAO;
 import com.thousandeyes.api.model.Tweet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
 @Transactional
 public class TweetService {
     @Autowired
-    private JdbcTweetDAO tweetDAO;
+    private TweetDAO tweetDAO;
 
     public List<Tweet> getTweetsByUser(long userId){
         return tweetDAO.getTweetsByUser(userId);

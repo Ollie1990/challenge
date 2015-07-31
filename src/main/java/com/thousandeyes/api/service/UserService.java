@@ -1,6 +1,6 @@
 package com.thousandeyes.api.service;
 
-import com.thousandeyes.api.dao.JdbcUserDAO;
+import com.thousandeyes.api.dao.UserDAO;
 import com.thousandeyes.api.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.List;
 @Transactional
 public class UserService {
     @Autowired
-    private JdbcUserDAO userDAO;
+    private UserDAO userDAO;
 
     public List<User> getUsers(List<Long> followers) {
         return userDAO.getUsersByIds(followers);
