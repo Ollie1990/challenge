@@ -17,10 +17,6 @@ public class FollowerService {
     @Autowired
     private JdbcFollowerDAO followerDAO;
 
-//    public FollowerService(){
-//        followerDAO = new JdbcFollowerDAO();
-//    }
-
     public void startFollowing(long userId, long toFollowUserId){
         followerDAO.startFollowing(userId, toFollowUserId);
     }

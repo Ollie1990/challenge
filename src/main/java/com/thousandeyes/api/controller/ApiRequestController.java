@@ -4,6 +4,7 @@ import com.thousandeyes.api.model.ErrorResponse;
 import com.thousandeyes.api.model.Tweet;
 import com.thousandeyes.api.service.FollowerService;
 import com.thousandeyes.api.service.TweetService;
+import com.thousandeyes.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +25,7 @@ public class ApiRequestController {
     private FollowerService followerService;
     @Autowired
     private TweetService tweetService;
-
-//    @Autowired
-//    public ApiRequestController(FollowerService followerService, TweetService tweetService) {
-//        this.followerService = followerService;
-//        this.tweetService = tweetService;
-//    }
+    private UserService userService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String homePageRedirect(ModelMap model){
@@ -86,9 +82,10 @@ public class ApiRequestController {
     }
 
     @RequestMapping(value = "/api/tweets", method = RequestMethod.GET)
-    public void getTweets(@RequestParam(value="userId") long userId) {
+    public Object getTweets(@RequestParam(value="userId") long userId) {
         //validate token
         //validate userId
         List<Tweet> tweets = tweetService.getTweetsByUser(userId);
+        return tweets;
     }
 }

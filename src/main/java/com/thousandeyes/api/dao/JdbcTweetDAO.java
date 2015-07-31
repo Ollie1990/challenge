@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -15,13 +17,20 @@ import java.util.List;
 /**
  * Created by Roberto on 25/07/2015.
  */
+@Repository("tweetDao")
 public class JdbcTweetDAO implements TweetDAO {
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final String GET_TWEETS = "select * from tweets" +
             "where user_id = :user_id OR user_id IN (" +
             "select user_id from followers where follower_id = :user_id)";
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
+    public JdbcTweetDAO(DataSource dataSource){
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    }
+
     public void setDataSource(DataSource dataSource) {
         this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
