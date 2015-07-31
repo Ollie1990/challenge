@@ -2,6 +2,7 @@ package com.thousandeyes.api.controller;
 
 import com.thousandeyes.api.model.ErrorResponse;
 import com.thousandeyes.api.model.Tweet;
+import com.thousandeyes.api.model.User;
 import com.thousandeyes.api.service.FollowerService;
 import com.thousandeyes.api.service.TweetService;
 import com.thousandeyes.api.service.UserService;
@@ -25,6 +26,7 @@ public class ApiRequestController {
     private FollowerService followerService;
     @Autowired
     private TweetService tweetService;
+    @Autowired
     private UserService userService;
 
     @RequestMapping(method = RequestMethod.GET)
@@ -35,7 +37,8 @@ public class ApiRequestController {
 
     @RequestMapping(value = "/api/getFollowers", method = RequestMethod.GET)
     public Object getFollowers(@RequestParam(value="userId") long userId,
-                                              @RequestParam(value="token") String token) {
+                                              @RequestParam(value="token") String token,
+                               @RequestParam(required = false) boolean expand) {
         if (!validate(token))
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
         //validate userId
@@ -44,7 +47,12 @@ public class ApiRequestController {
                     String.format(ErrorResponse.ENTITY_NOT_FOUND, "User Id"));
         List<Long> followers = followerService.getFollowers(userId);
         // maybe it can be retrieved the full user info given the id, using userService
-        return followers;
+        if (expand){
+            List<User> detailedFollowers = userService.getUsers(followers);
+            return detailedFollowers;
+        }
+        else
+            return followers;
     }
 
     private boolean validateUserId(long userId) {
@@ -82,8 +90,9 @@ public class ApiRequestController {
     }
 
     @RequestMapping(value = "/api/tweets", method = RequestMethod.GET)
-    public Object getTweets(@RequestParam(value="userId") long userId) {
-        //validate token
+    public Object getTweets(@RequestParam(value="userId") long userId, @RequestParam(value="token") String token) {
+        if (!validate(token))
+            return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
         //validate userId
         List<Tweet> tweets = tweetService.getTweetsByUser(userId);
         return tweets;
