@@ -27,8 +27,14 @@ public class FollowerService {
             return false;
     }
 
-    public void stopFollowing(long userId, long toUnfollowUserId){
-        followerDAO.stopFollowing(userId, toUnfollowUserId);
+    public boolean stopFollowing(long userId, long toUnfollowUserId){
+        Follower f = followerDAO.getFollowerByKey(toUnfollowUserId, userId);
+        if (f != null) {
+            followerDAO.stopFollowing(userId, toUnfollowUserId);
+            return true;
+        }
+        else
+            return false;
     }
 
     public List<Long> getFollowers(long userId){

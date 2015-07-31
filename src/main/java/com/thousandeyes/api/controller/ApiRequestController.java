@@ -72,7 +72,7 @@ public class ApiRequestController {
             return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponse.BAD_REQ_SAME_IDS);
         boolean done = followerService.startFollowing(followerId, toFollowUserId);
         if (done)
-            return new Response(HttpServletResponse.SC_CREATED,
+            return new Response(HttpServletResponse.SC_OK,
                 String.format("Now %s follows %s", followerId, toFollowUserId));
         else
             return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST,
@@ -80,10 +80,21 @@ public class ApiRequestController {
     }
 
     @RequestMapping(value = "/api/unfollow", method = RequestMethod.POST)
-    public void unfollow(long toUnfollowUserId, long followerId) {
-        //validate token
-        //validate userId (?)
-        followerService.stopFollowing(followerId, toUnfollowUserId);
+    public Object unfollow(@RequestBody FollowPayload payload) {
+        long toUnfollowUserId = payload.getFollower().getUserId();
+        long followerId = payload.getFollower().getFollowerId();
+        String token = payload.getToken();
+        if (!validate(token))
+            return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
+        if (toUnfollowUserId == followerId)
+            return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponse.BAD_REQ_SAME_IDS);
+        boolean done = followerService.stopFollowing(followerId, toUnfollowUserId);
+        if (done)
+            return new Response(HttpServletResponse.SC_OK,
+                    String.format("Now %s doesn't follow %s anymore", followerId, toUnfollowUserId));
+        else
+            return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST,
+                    String.format("%s is already not following %s", followerId, toUnfollowUserId));
     }
 
     @RequestMapping(value = "/api/tweets", method = RequestMethod.GET)
