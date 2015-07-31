@@ -20,4 +20,8 @@ public class TweetService {
     public List<Tweet> getTweetsByUser(long userId){
         return tweetDAO.getTweetsByUser(userId);
     }
+
+    public List<Tweet> getTweetsByUserAndTextKey(long userId, String search) {
+        return tweetDAO.getTweetsByUserFilteredByKey(userId, search);
+    }
 }

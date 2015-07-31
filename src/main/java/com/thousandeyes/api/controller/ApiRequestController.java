@@ -37,7 +37,7 @@ public class ApiRequestController {
 
     @RequestMapping(value = "/api/getFollowers", method = RequestMethod.GET)
     public Object getFollowers(@RequestParam(value="userId") long userId,
-                                              @RequestParam(value="token") String token,
+                               @RequestParam(value="token") String token,
                                @RequestParam(required = false) boolean expand) {
         if (!validate(token))
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
@@ -90,11 +90,20 @@ public class ApiRequestController {
     }
 
     @RequestMapping(value = "/api/tweets", method = RequestMethod.GET)
-    public Object getTweets(@RequestParam(value="userId") long userId, @RequestParam(value="token") String token) {
+    public Object getTweets(@RequestParam(value="userId") long userId,
+                            @RequestParam(value="token") String token,
+                            @RequestParam(required = false) String search) {
         if (!validate(token))
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
         //validate userId
-        List<Tweet> tweets = tweetService.getTweetsByUser(userId);
+
+        List<Tweet> tweets;
+        if (search != null && !search.isEmpty()){
+            tweets = tweetService.getTweetsByUserAndTextKey(userId, search);
+        }
+        else {
+            tweets = tweetService.getTweetsByUser(userId);
+        }
         return tweets;
     }
 }

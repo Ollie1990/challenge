@@ -10,4 +10,6 @@ import java.util.List;
 public interface TweetDAO extends SimpleDAO{
 
     List<Tweet> getTweetsByUser(long userId);
+
+    List<Tweet> getTweetsByUserFilteredByKey(long userId, String search);
 }
