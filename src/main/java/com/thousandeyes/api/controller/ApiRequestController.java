@@ -2,6 +2,7 @@ package com.thousandeyes.api.controller;
 
 import com.thousandeyes.api.model.*;
 import com.thousandeyes.api.service.FollowerService;
+import com.thousandeyes.api.service.TokenService;
 import com.thousandeyes.api.service.TweetService;
 import com.thousandeyes.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class ApiRequestController {
     private TweetService tweetService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private TokenService tokenService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String homePageRedirect(ModelMap model){
@@ -119,6 +122,7 @@ public class ApiRequestController {
         if (token == null || token.length() != 16)
             return false;
         //check in DB --> cached in memory, memcache?
-        return true;
+        boolean isValid = tokenService.tokenIsValid(token);
+        return isValid;
     }
 }

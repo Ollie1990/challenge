@@ -1,5 +1,6 @@
 package com.thousandeyes.api.configuration;
 
+import com.thousandeyes.api.cache.MemcacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +13,8 @@ import org.springframework.web.servlet.view.JstlView;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 @Configuration
@@ -34,6 +37,21 @@ public class WebAppConfiguration {
         viewResolver.setPrefix("/WEB-INF/views/");
         viewResolver.setSuffix(".jsp");
         return viewResolver;
+    }
+
+    @Bean
+    public MemcacheManager memcacheManager(){
+        MemcacheManager manager = new MemcacheManager();
+        InetAddress address = null;
+        try {
+            address = InetAddress.getByName("localhost");
+        } catch (UnknownHostException e) {
+            return null;
+        }
+        manager.setAddress(address);
+        manager.setPort(11211);
+        manager.setTimeToLive(10800);   //3 hours
+        return manager;
     }
 
     @Bean
