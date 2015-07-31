@@ -54,8 +54,8 @@ public class JdbcUserDAO implements UserDAO{
         return user;
     }
 
-    public List<User> getUsersByIds(List<Long> followers) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("ids", followers);
+    public List<User> getUsersByIds(List<Long> ids) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("ids", ids);
         List<User> users = namedParameterJdbcTemplate.query(GET_USERS_BY_IDS, namedParameters, new RowMapper<User>() {
             @Override
             public User mapRow(ResultSet rs, int rowNum) throws SQLException {

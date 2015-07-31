@@ -17,7 +17,7 @@ public class UserService {
     @Autowired
     private UserDAO userDAO;
 
-    public List<User> getUsers(List<Long> followers) {
-        return userDAO.getUsersByIds(followers);
+    public List<User> getUsers(List<Long> ids) {
+        return userDAO.getUsersByIds(ids);
     }
 }

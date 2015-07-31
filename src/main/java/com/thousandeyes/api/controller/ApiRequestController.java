@@ -41,12 +41,7 @@ public class ApiRequestController {
                                @RequestParam(required = false) boolean expand) {
         if (!validate(token))
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
-        //validate userId
-        if (!validateUserId(userId))
-            return new ErrorResponse(HttpServletResponse.SC_NOT_FOUND,
-                    String.format(ErrorResponse.ENTITY_NOT_FOUND, "User Id"));
         List<Long> followers = followerService.getFollowers(userId);
-        // maybe it can be retrieved the full user info given the id, using userService
         if (expand){
             List<User> detailedFollowers = userService.getUsers(followers);
             return detailedFollowers;
@@ -55,24 +50,19 @@ public class ApiRequestController {
             return followers;
     }
 
-    private boolean validateUserId(long userId) {
-        //todo
-        return true;
-    }
-
-    private boolean validate(String token) {
-        if (token == null || token.length() != 16)
-            return false;
-        //check in DB --> cached in memory, memcache?
-        return true;
-    }
-
     @RequestMapping(value = "/api/getFollowing", method = RequestMethod.GET)
-    public List<Long> getFollowing(@RequestParam(value="userId") long userId) {
-        //validate token
-        //validate userId
+    public Object getFollowing(@RequestParam(value="userId") long userId,
+                                   @RequestParam(value="token") String token,
+                                   @RequestParam(required = false) boolean expand) {
+        if (!validate(token))
+            return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
         List<Long> following = followerService.getFollowing(userId);
-        return following;
+        if (expand){
+            List<User> detailedFollowing = userService.getUsers(following);
+            return detailedFollowing;
+        }
+        else
+            return following;
     }
 
     @RequestMapping(value = "/api/follow", method = RequestMethod.POST)
@@ -105,5 +95,17 @@ public class ApiRequestController {
             tweets = tweetService.getTweetsByUser(userId);
         }
         return tweets;
+    }
+
+    private boolean validateUserId(long userId) {
+        //todo
+        return true;
+    }
+
+    private boolean validate(String token) {
+        if (token == null || token.length() != 16)
+            return false;
+        //check in DB --> cached in memory, memcache?
+        return true;
     }
 }

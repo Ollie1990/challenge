@@ -10,5 +10,5 @@ import java.util.List;
 public interface UserDAO extends SimpleDAO {
     User getUserById(long userId);
 
-    List<User> getUsersByIds(List<Long> followers);
+    List<User> getUsersByIds(List<Long> ids);
 }
