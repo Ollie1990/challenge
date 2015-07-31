@@ -1,20 +1,16 @@
 package com.thousandeyes.api.controller;
 
-import com.thousandeyes.api.model.ErrorResponse;
-import com.thousandeyes.api.model.Tweet;
-import com.thousandeyes.api.model.User;
+import com.thousandeyes.api.model.*;
 import com.thousandeyes.api.service.FollowerService;
 import com.thousandeyes.api.service.TweetService;
 import com.thousandeyes.api.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Roberto on 26/07/2015.
@@ -66,10 +62,21 @@ public class ApiRequestController {
     }
 
     @RequestMapping(value = "/api/follow", method = RequestMethod.POST)
-    public void follow(long toFollowUserId, long followerId) {
-        //validate token
-        //validate userId (?)
-        followerService.startFollowing(followerId, toFollowUserId);
+    public Object follow(@RequestBody FollowPayload payload) {
+        long toFollowUserId = payload.getFollower().getUserId();
+        long followerId = payload.getFollower().getFollowerId();
+        String token = payload.getToken();
+        if (!validate(token))
+            return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
+        if (toFollowUserId == followerId)
+            return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponse.BAD_REQ_SAME_IDS);
+        boolean done = followerService.startFollowing(followerId, toFollowUserId);
+        if (done)
+            return new Response(HttpServletResponse.SC_CREATED,
+                String.format("Now %s follows %s", followerId, toFollowUserId));
+        else
+            return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST,
+                    String.format("%s already follows %s", followerId, toFollowUserId));
     }
 
     @RequestMapping(value = "/api/unfollow", method = RequestMethod.POST)
@@ -95,11 +102,6 @@ public class ApiRequestController {
             tweets = tweetService.getTweetsByUser(userId);
         }
         return tweets;
-    }
-
-    private boolean validateUserId(long userId) {
-        //todo
-        return true;
     }
 
     private boolean validate(String token) {

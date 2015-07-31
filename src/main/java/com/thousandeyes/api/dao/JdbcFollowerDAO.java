@@ -1,5 +1,6 @@
 package com.thousandeyes.api.dao;
 
+import com.thousandeyes.api.model.Follower;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -20,6 +21,8 @@ import java.util.Map;
  */
 @Repository("followerDao")
 public class JdbcFollowerDAO implements FollowerDAO {
+    private static final String GET_ROW_BY_ID = "select * from followers where user_id= :user_id AND " +
+            "follower_id= :follower_id" ;
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private SimpleJdbcInsert insert;
     private final String GET_FOLLOWERS = "select * from followers where user_id = :user_id";
@@ -79,6 +82,28 @@ public class JdbcFollowerDAO implements FollowerDAO {
                 });
         return followers;
     }
+
+    @Override
+    public Follower getFollowerByKey(long userId, long followerId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("follower_id", followerId).
+                addValue("user_id", userId);
+        List<Follower> follower = namedParameterJdbcTemplate.query(GET_ROW_BY_ID, namedParameters,
+                new RowMapper<Follower>() {
+                    @Override
+                    public Follower mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        Follower follower = new Follower();
+                               follower.setUserId(rs.getLong(1));
+                            follower.setFollowerId(rs.getLong(2));
+                            return follower;
+                    }
+                }
+        );
+
+        if (follower.isEmpty())
+            return null;
+        return follower.get(0);
+    }
+
 
     public DataSource getDataSource() {
         return dataSource;

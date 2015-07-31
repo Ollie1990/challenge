@@ -1,5 +1,7 @@
 package com.thousandeyes.api.dao;
 
+import com.thousandeyes.api.model.Follower;
+
 import java.util.List;
 
 /**
@@ -14,4 +16,6 @@ public interface FollowerDAO extends SimpleDAO{
     List<Long> getFollowers(long userId);
 
     List<Long> getFollowing(long userId);
+
+    Follower getFollowerByKey(long userId, long followerId);
 }

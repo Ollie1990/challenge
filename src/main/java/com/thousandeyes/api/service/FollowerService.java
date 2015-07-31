@@ -1,6 +1,7 @@
 package com.thousandeyes.api.service;
 
 import com.thousandeyes.api.dao.FollowerDAO;
+import com.thousandeyes.api.model.Follower;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +17,14 @@ public class FollowerService {
     @Autowired
     private FollowerDAO followerDAO;
 
-    public void startFollowing(long userId, long toFollowUserId){
-        followerDAO.startFollowing(userId, toFollowUserId);
+    public boolean startFollowing(long userId, long toFollowUserId){
+        Follower f = followerDAO.getFollowerByKey(toFollowUserId, userId);
+        if (f == null){
+            followerDAO.startFollowing(userId, toFollowUserId);
+            return true;
+        }
+        else
+            return false;
     }
 
     public void stopFollowing(long userId, long toUnfollowUserId){
