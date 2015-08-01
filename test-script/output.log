@@ -1,0 +1,130 @@
+Roberto@Roberto-PC /cygdrive/c/Users/Roberto/Desktop
+$ python test.py
+These tests are done with a local database. Please refer to the sql script to know the data that populate DB.
+-----------------------------------------------------------------------------
+***** Get tweets *****
+GET: challenge-API/api/tweets   PARAMETERS: userId=1&token=1111222233334444
+URL: http://localhost:8080/challenge-API/api/tweets?userId=1&token=1111222233334444
+RESPONSE:
+[{'id': 1, 'timestamp': 1437924069000, 'content': 'Hello World Tweet!', 'userId': 1}, {'id': 3, 'timestamp': 1438328325000, 'content': 'Hello, I am Giulio!', 'userId': 3}, {'id': 4, 'timestamp': 1438328325000, 'content': "This morning I'll go to Rome in train", 'userId': 3}]
+-----------------------------------------------------------------------------
+***** Get tweets using search key *****
+GET: challenge-API/api/tweets   PARAMETERS: userId=1&token=1111222233334444&search=train
+URL: http://localhost:8080/challenge-API/api/tweets?userId=1&token=1111222233334444&search=train
+RESPONSE:
+[{'id': 4, 'timestamp': 1438328325000, 'content': "This morning I'll go to Rome in train", 'userId': 3}]
+-----------------------------------------------------------------------------
+***** Get tweets given a not valid user *****
+GET: challenge-API/api/tweets   PARAMETERS: userId=-12&token=1111222233334444
+URL: http://localhost:8080/challenge-API/api/tweets?userId=-12&token=1111222233334444
+RESPONSE:
+[]
+-----------------------------------------------------------------------------
+***** Get following given a user *****
+GET: challenge-API/api/getFollowing   PARAMETERS: userId=2&token=1234567890123456
+URL: http://localhost:8080/challenge-API/api/getFollowing?userId=2&token=1234567890123456
+RESPONSE:
+[1, 3]
+-----------------------------------------------------------------------------
+***** Get detailed list of following given a user *****
+GET: challenge-API/api/getFollowing   PARAMETERS: userId=2&token=1234567890123456&expand=true
+URL: http://localhost:8080/challenge-API/api/getFollowing?userId=2&token=1234567890123456&expand=true
+RESPONSE:
+[{'id': 1, 'nickname': 'octawizard', 'password': 'password', 'telephoneNumber': '1234567890', 'email': 'roberto.manca.89@gmail.com'}, {'id': 3, 'nickname': 'giuliothereal', 'password': 'giulio1900', 'telephoneNumber': '24411224422', 'email': 'giulio.bianchi@gmail.com'}]
+-----------------------------------------------------------------------------
+***** Get following given a not valid user *****
+GET: challenge-API/api/getFollowing   PARAMETERS: userId=-12&token=1234567890123456
+URL: http://localhost:8080/challenge-API/api/getFollowing?userId=-12&token=1234567890123456
+RESPONSE:
+[]
+-----------------------------------------------------------------------------
+***** Get detailed list of following given a not valid user *****
+GET: challenge-API/api/getFollowing   PARAMETERS: userId=-12&token=1234567890123456&expand=true
+URL: http://localhost:8080/challenge-API/api/getFollowing?userId=-12&token=1234567890123456&expand=true
+RESPONSE:
+[]
+-----------------------------------------------------------------------------
+***** Get followers of a user *****
+GET: challenge-API/api/getFollowers   PARAMETERS: userId=1&token=1234567890123456
+URL: http://localhost:8080/challenge-API/api/getFollowers?userId=1&token=1234567890123456
+RESPONSE:
+[2]
+-----------------------------------------------------------------------------
+***** Get detailed list of followers of a given user *****
+GET: challenge-API/api/getFollowers  PARAMETERS: userId=1&token=1234567890123456&expand=true
+URL: http://localhost:8080/challenge-API/api/getFollowers?userId=1&token=1234567890123456&expand=true
+RESPONSE:
+[{'id': 2, 'nickname': 'marione', 'password': 'mario123', 'telephoneNumber': '12123434566', 'email': 'mario.rossi@gmail.com'}]
+-----------------------------------------------------------------------------
+***** Get followers of a not valid user *****
+GET: challenge-API/api/getFollowers   PARAMETERS: userId=-12&token=1234567890123456
+URL: http://localhost:8080/challenge-API/api/getFollowers?userId=-12&token=1234567890123456
+RESPONSE:
+[]
+-----------------------------------------------------------------------------
+***** Get detailed list of followers of a not valid user *****
+GET: challenge-API/api/getFollowers   PARAMETERS: userId=-12&token=1234567890123456&expand=true
+URL: http://localhost:8080/challenge-API/api/getFollowers?userId=-12&token=1234567890123456&expand=true
+RESPONSE:
+[]
+-----------------------------------------------------------------------------
+***** Start following a user *****
+POST: challenge-API/api/follow   PAYLOAD: {"follower": {"userId":2, "followerId":1},"token": 1234567890123456}
+URL: http://localhost:8080/challenge-API/api/follow
+RESPONSE:
+{"httpCode":200,"message":"Now 1 follows 2"}
+-----------------------------------------------------------------------------
+***** Start following a user already followed *****
+POST: challenge-API/api/follow   PAYLOAD: {"follower": {"userId":2, "followerId":1},"token": 1234567890123456}
+URL: http://localhost:8080/challenge-API/api/follow
+RESPONSE:
+{"httpCode":400,"message":"1 already follows 2"}
+-----------------------------------------------------------------------------
+***** User starts to follow itself *****
+POST: challenge-API/api/follow   PAYLOAD: {"follower": {"userId":1, "followerId":1},"token": 1234567890123456}
+URL: http://localhost:8080/challenge-API/api/follow
+RESPONSE:
+{"httpCode":400,"message":"The ids provided cannot be the same."}
+-----------------------------------------------------------------------------
+***** Start unfollowing a user *****
+POST: challenge-API/api/unfollow   PAYLOAD: {"follower": {"userId":2, "followerId":1},"token": 1234567890123456}
+URL: http://localhost:8080/challenge-API/api/unfollow
+RESPONSE:
+{"httpCode":200,"message":"Now 1 doesn't follow 2 anymore"}
+-----------------------------------------------------------------------------
+***** Start unfollowing a user already unfollowed *****
+POST: challenge-API/api/unfollow   PAYLOAD: {"follower": {"userId":2, "followerId":1},"token": 1234567890123456}
+URL: http://localhost:8080/challenge-API/api/unfollow
+RESPONSE:
+{"httpCode":400,"message":"1 is already not following 2"}
+-----------------------------------------------------------------------------
+***** User starts to unfollow itself *****
+POST: challenge-API/api/unfollow   PAYLOAD: {"follower": {"userId":2, "followerId":2},"token": 1234567890123456}
+URL: http://localhost:8080/challenge-API/api/unfollow
+RESPONSE:
+{"httpCode":400,"message":"The ids provided cannot be the same."}
+-----------------------------------------------------------------------------
+***** 404 endpoint not found *****
+GET: challenge-API/api/wrongEndpoint   PARAMETERS: userId=1&token=1111222233334444
+URL: http://localhost:8080/challenge-API/api/wrongEndpoint?userId=1&token=1111222233334444
+RESPONSE:
+{'httpCode': 404, 'message': 'The requested endpoint does not exists.'}
+-----------------------------------------------------------------------------
+***** 400 Bad Request - malformed request (userId must be a long value) *****
+GET: challenge-API/api/tweets   PARAMETERS: userId=notValidId&token=1111222233334444
+URL: http://localhost:8080/challenge-API/api/tweets?userId=notValidId&token=1111222233334444
+RESPONSE:
+{"httpCode":400,"message":"The request is malformed."}
+-----------------------------------------------------------------------------
+***** 400 Bad Request - malformed request (users ids not valid) *****
+POST: challenge-API/api/follow   PAYLOAD: {"follower": {"userId":-2, "followerId":-3},"token": 1234567890123456}
+URL: http://localhost:8080/challenge-API/api/follow
+RESPONSE:
+{"httpCode":400,"message":"One of both users are not valid"}
+-----------------------------------------------------------------------------
+***** 401 unauthorized - wrong token *****
+GET: challenge-API/api/tweets   PARAMETERS: userId=1&token=wrongtoken
+URL: http://localhost:8080/challenge-API/api/tweets?userId=1&token=wrongtoken
+RESPONSE:
+{'httpCode': 401, 'message': 'You have no authorization to make the request. Make sure your API token is correct.'}
+-----------------------------------------------------------------------------
