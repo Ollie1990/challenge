@@ -29,6 +29,12 @@ public class WebAppConfiguration {
     private static final String PASSWORD_PROP_NAME = "password";
     private static final String URL_PROP_NAME = "url";
     private static final String DRIVER_PROP_NAME = "driverClassName";
+    private static final String MEM_ADDRESS = "address";
+    private static final String MEM_PORT = "port";
+    private static final String MEM_TTL = "ttl";
+    private String memAddress;
+    private int memPort;
+    private int memTtl;
 
     @Bean(name="Resolver")
     public ViewResolver viewResolver() {
@@ -41,17 +47,32 @@ public class WebAppConfiguration {
 
     @Bean
     public MemcacheManager memcacheManager(){
+        try{
+            readMemcacheProp();
+        } catch (IOException e){
+            e.printStackTrace();
+            return null;
+        }
         MemcacheManager manager = new MemcacheManager();
         InetAddress address = null;
         try {
-            address = InetAddress.getByName("localhost");
+            address = InetAddress.getByName(memAddress);
         } catch (UnknownHostException e) {
             return null;
         }
         manager.setAddress(address);
-        manager.setPort(11211);
-        manager.setTimeToLive(10800);   //3 hours
+        manager.setPort(memPort);
+        manager.setTimeToLive(memTtl);
         return manager;
+    }
+
+    private void readMemcacheProp() throws IOException {
+        Properties properties = new Properties();
+        InputStream jdbcFileInput = this.getClass().getResourceAsStream("/memcache.properties");
+        properties.load(jdbcFileInput);
+        memAddress = properties.getProperty(MEM_ADDRESS);
+        memPort = Integer.valueOf(properties.getProperty(MEM_PORT));
+        memTtl = Integer.valueOf(properties.getProperty(MEM_TTL));
     }
 
     @Bean
@@ -60,6 +81,7 @@ public class WebAppConfiguration {
             readProperties();
         } catch (IOException e){
             e.printStackTrace();
+            return null;
         }
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(driverClassName);
