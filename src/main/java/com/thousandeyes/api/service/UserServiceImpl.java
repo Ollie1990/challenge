@@ -20,4 +20,9 @@ public class UserServiceImpl implements UserService{
     public List<User> getUsers(List<Long> ids) {
         return userDAO.getUsersByIds(ids);
     }
+
+    @Override
+    public boolean areValidUsers(long userId1, long userId2) {
+        return userDAO.checkUsers(userId1, userId2);
+    }
 }

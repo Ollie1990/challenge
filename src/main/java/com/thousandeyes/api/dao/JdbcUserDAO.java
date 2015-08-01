@@ -23,6 +23,7 @@ public class JdbcUserDAO implements UserDAO{
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final String GET_USER_BY_ID = "select * from users where id = :user_id";
     private final String GET_USERS_BY_IDS= "select * from users where id IN ( :ids )";
+    private static final String CHECK_USERS = "select count(*) from users where id = :user_id1 OR id =:user_id2";
 
     @Autowired
     private DataSource dataSource;
@@ -69,5 +70,13 @@ public class JdbcUserDAO implements UserDAO{
             }
         });
         return users;
+    }
+
+    @Override
+    public boolean checkUsers(long userId1, long userId2) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("user_id1", userId1).
+                addValue("user_id2", userId2);
+        int countToken = namedParameterJdbcTemplate.queryForObject(CHECK_USERS, namedParameters, Integer.class);
+        return countToken == 2;
     }
 }

@@ -11,4 +11,6 @@ public interface UserDAO extends SimpleDAO {
     User getUserById(long userId);
 
     List<User> getUsersByIds(List<Long> ids);
+
+    boolean checkUsers(long userId1, long userId2);
 }

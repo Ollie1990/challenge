@@ -75,6 +75,9 @@ public class ApiRequestController {
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
         if (toFollowUserId == followerId)
             return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponse.BAD_REQ_SAME_IDS);
+        boolean usersAreValid = userService.areValidUsers(toFollowUserId, followerId);
+        if (!usersAreValid)
+            return new ErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponse.USERS_NOT_VALID);
         boolean done = followerService.startFollowing(followerId, toFollowUserId);
         if (done)
             return new Response(HttpServletResponse.SC_OK,
