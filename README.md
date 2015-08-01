@@ -1,4 +1,4 @@
-# challenge
+# Challenge: simple Twitter-like API service
 This repo implements a Twitter like API service with the following basic functionality:
 
 1. a call to read the tweets for a given user (include self-tweets and people being followed by user)
@@ -12,7 +12,7 @@ to authenticate the calls; if the wrong API token is given, a 401 error is throw
 
 Also added handling of 400 and 500 http errors.
 
-Notice that a "expand" (boolean) optional parameter can be added when 
+Notice that a "expand=true" optional parameter can be added when 
 calling to get the list of people a user is following to see full details of those users. Of course
 this optional parameter is available also for the followers of the user.
 TODO...
