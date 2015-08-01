@@ -1,0 +1,4 @@
+# Rename this file in memcache.properties and set the remaining parameters. ttl is in seconds
+address=localhost
+port=
+ttl=

@@ -1,0 +1,5 @@
+# Rename this file in jdbc.properties and set the remaining parameters
+driverClassName = com.mysql.jdbc.Driver
+url =
+username =
+password =
