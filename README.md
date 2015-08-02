@@ -17,6 +17,7 @@ To implement this service Spring 4 [MVC](http://docs.spring.io/spring/docs/curre
  and [JDBC](http://docs.spring.io/spring/docs/current/spring-framework-reference/html/jdbc.html) annotation-driven has been used.
 For efficiency reasons, a cache system is implemented using [Memcached](http://memcached.org/) for handling token
 validation.
+The DBMS used is MySQL, Distrib 5.6.24, for Win64 (x86_64).
 
 This project is compiled and built using Java 8 and Maven.
 
