@@ -20,14 +20,13 @@ public class TokenServiceImpl implements TokenService {
 
     public boolean tokenIsValid(String token){
         //check first in cache, then DB if needed
-        MemcachedClient client = memcacheManager.getClient();
-        boolean isValid = memcacheManager.checkToken(client, token);
+        boolean isValid = memcacheManager.checkToken(token);
         if (isValid)
             return true;
         else {
             isValid = tokenDAO.checkToken(token);
             if (isValid){
-                memcacheManager.addTokenInCache(client, token);
+                memcacheManager.addTokenInCache(token);
             }
             return isValid;
         }

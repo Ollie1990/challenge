@@ -2,6 +2,7 @@ package com.thousandeyes.api.cache;
 
 import net.spy.memcached.MemcachedClient;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -16,6 +17,7 @@ public class MemcacheManager {
     private int port;
     /* time to live of key-value in cache, in seconds */
     private int timeToLive;
+    private static MemcachedClient client;
 
     public InetAddress getAddress() {
         return address;
@@ -42,18 +44,22 @@ public class MemcacheManager {
     }
 
     public MemcachedClient getClient(){
+        if (client != null)
+            return client;
         InetSocketAddress socket = new InetSocketAddress(address, port);
-        MemcachedClient client = null;
+        client = null;
         try {
             client = new MemcachedClient(socket);
         } catch (IOException e) {
             //Do nothing
+            e.printStackTrace();
         }
         return client;
     }
 
-    public boolean checkToken(MemcachedClient client, String token) {
+    public boolean checkToken(String token) {
         Object value;
+        MemcachedClient client = getClient();
         Future<Object> f = client.asyncGet(token);
         try {
             // throws expecting InterruptedException, ExecutionException or TimeoutException
@@ -68,11 +74,17 @@ public class MemcacheManager {
         }
     }
 
-    public boolean addTokenInCache(MemcachedClient client, String token) {
+    public boolean addTokenInCache(String token) {
+        MemcachedClient client = getClient();
         if (client == null)
             return false;
         // key = value
         client.set(token, timeToLive, token);
         return true;
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        getClient().shutdown();
     }
 }
