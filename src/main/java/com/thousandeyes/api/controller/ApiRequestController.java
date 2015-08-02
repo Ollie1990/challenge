@@ -110,8 +110,6 @@ public class ApiRequestController {
                             @RequestParam(required = false) String search) {
         if (!validate(token))
             return new ErrorResponse(HttpServletResponse.SC_UNAUTHORIZED, ErrorResponse.UNAUTHORIZED);
-        //validate userId
-
         List<Tweet> tweets;
         if (search != null && !search.isEmpty()){
             tweets = tweetService.getTweetsByUserAndTextKey(userId, search);
