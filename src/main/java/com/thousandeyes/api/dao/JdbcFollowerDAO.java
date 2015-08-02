@@ -27,6 +27,7 @@ public class JdbcFollowerDAO implements FollowerDAO {
     private SimpleJdbcInsert insert;
     private final String GET_FOLLOWERS = "select * from followers where user_id = :user_id";
     private final String GET_FOLLOWING = "select * from followers where follower_id = :follower_id";
+    private final String DELETE_FOLLOWER_ROW = "delete from followers where user_id = ? and follower_id = ?";
     @Autowired
     private DataSource dataSource;
 
@@ -52,7 +53,7 @@ public class JdbcFollowerDAO implements FollowerDAO {
     @Override
     public void stopFollowing(long userId, long toUnfollowUserId) {
         namedParameterJdbcTemplate.getJdbcOperations().update(
-                "delete from followers where user_id = ? and follower_id = ?",
+                DELETE_FOLLOWER_ROW,
                 toUnfollowUserId, userId);
     }
 
@@ -92,9 +93,9 @@ public class JdbcFollowerDAO implements FollowerDAO {
                     @Override
                     public Follower mapRow(ResultSet rs, int rowNum) throws SQLException {
                         Follower follower = new Follower();
-                               follower.setUserId(rs.getLong(1));
-                            follower.setFollowerId(rs.getLong(2));
-                            return follower;
+                        follower.setUserId(rs.getLong(1));
+                        follower.setFollowerId(rs.getLong(2));
+                        return follower;
                     }
                 }
         );

@@ -34,6 +34,6 @@ public class JdbcTokenDAO implements TokenDAO {
 
     @Override
     public void setDataSource(DataSource dataSource) {
-
+        namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
     }
 }
