@@ -31,8 +31,7 @@ public class ApiRequestController {
     private TokenService tokenService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String homePageRedirect(ModelMap model){
-        model.put("welcomeMessage", "Welcome to the home page of Challenge API");
+    public String homePageRedirect(){
         return "Welcome to the home page of Challenge API";
     }
 
